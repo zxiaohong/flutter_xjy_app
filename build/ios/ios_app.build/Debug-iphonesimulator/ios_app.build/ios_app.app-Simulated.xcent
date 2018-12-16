@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>application-identifier</key>
+	<string>V97A4GA78R.Hy513098--.ios-app</string>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>V97A4GA78R.Hy513098--.ios-app</string>
+	</array>
+</dict>
+</plist>
