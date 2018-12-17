@@ -1,10 +1,12 @@
-import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter/material.dart';
+import '../../model/allRoomDevices.dart';
 
 class DeviceCard extends StatefulWidget {
   @override
@@ -30,7 +32,7 @@ class DeviceCardView extends StatefulWidget {
 }
 
 class DeviceCardViewState extends State<DeviceCardView> {
-  var _devices = [];
+  List<Device> _devices = [];
 
   @override
   void initState() {
@@ -59,26 +61,22 @@ class DeviceCardViewState extends State<DeviceCardView> {
 
   _getDevices() async {
     print('devices');
-    var httpClient = new HttpClient();
     var uri = "https://easy-mock.com/mock/5c1362e3bb577d1fbc488206/s/service/getAllDevicesByHouseForAlphaApp";
-    var result;
-    try {
-      var request = await httpClient.getUrl(Uri.parse(uri));
-      var response = await request.close();
-      print(response.statusCode);
-      // print(HttpStatus.ok);
-      if (response.statusCode == HttpStatus.ok) {
-        var responseBody = await response.transform(utf8.decoder).join();
-        print(responseBody);
-        result = json.decode(responseBody);
-        print(result);
-        print(result["data"]["rooms"][0]["devices"][0]["app_pic_url"]);
+
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        Map respMap = json.decode(response.body);
+        AllRoomDevices allRoomDevices = new AllRoomDevices.fromJson(respMap);
+        List<Device> _allDevices = [];
+        allRoomDevices.rooms.forEach((item){
+          _allDevices.addAll(item.devices);
+        });
+        print(_allDevices.runtimeType);
         if(!mounted) return;
         setState(() {
-          _devices = result["data"]["rooms"][0]["devices"] as List<dynamic>;
+          _devices = _allDevices;
         });
       }
-    } catch (e) {}
   }
 
   Widget _singleDeviceCardBuilder(BuildContext context, int index){
@@ -98,7 +96,7 @@ class DeviceCardViewState extends State<DeviceCardView> {
               alignment: Alignment.topCenter,
               child: Image(
                   image: NetworkImage(
-                    _devices[index]["app_pic_url"]
+                    _devices[index].appPicUrl
                     ),
                   width: ScreenUtil().setHeight(150),
                   height: ScreenUtil().setWidth(150),
@@ -119,9 +117,9 @@ class DeviceCardViewState extends State<DeviceCardView> {
                       Container(
                         alignment: Alignment.center,
                         child:
-                            Text(_devices[index]["device_name"], style: TextStyle(color: Color(0xff272B4A), fontSize: ScreenUtil().setSp(24, false))),
+                            Text(_devices[index].deviceName, style: TextStyle(color: Color(0xff272B4A), fontSize: ScreenUtil().setSp(24, false))),
                       ),
-                      Text(_devices[index]["is_weilian"] == "1" ? "电源开" :"电源关", style: TextStyle(color: Colors.grey[500], fontSize: ScreenUtil().setSp(20, false)))
+                      Text(_devices[index].isWeilian == "1" ? "电源开" :"电源关", style: TextStyle(color: Colors.grey[500], fontSize: ScreenUtil().setSp(20, false)))
                     ],
                   ),
                   Positioned(

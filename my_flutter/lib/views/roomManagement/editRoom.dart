@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import './roomName.dart';
 import './animationtest.dart';
+import '../../model/allRoomDevices.dart';
 
 double _horizontalMargin = ScreenUtil().setWidth(20);
 double _verticalMargin20 = ScreenUtil().setHeight(20);
@@ -69,16 +70,16 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
   RoomsInfoState(this.roomName, this.roomId);
   final _fontStyle = TextStyle(
       fontSize: ScreenUtil().setSp(28, false), color: Color(0xffDEDFE8));
-  var _curRooms = [];
-  var _rooms = [];
-  var _defaultRooms = [];
-  var _otherRooms = [];
-  var _allOtherRooms = [];
+  List<Room> _curRooms = [];
+  List<Room> _rooms = [];
+  List<Room> _defaultRooms = [];
+  List<Room> _otherRooms = [];
+  List<Room> _allOtherRooms = [];
   int _deviceCount = 0;
-  var curRoom = [];
-  var otherRooms = [];
-  var allOtherRooms = [];
-  var defaultRooms = [];
+  List<Room> curRoom = [];
+  List<Room> otherRooms = [];
+  List<Room> allOtherRooms = [];
+  List<Room> defaultRooms = [];
   int deviceCount = 0;
   String _roomName;
   bool _devicesLoading = true;
@@ -99,39 +100,36 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
   _getDevices() async {
     var httpClient = new HttpClient();
     var uri = "https://easy-mock.com/mock/5c1362e3bb577d1fbc488206/s/service/getAllDevicesByHouseForAlphaApp";
-    var result;
     try {
       var request = await httpClient.getUrl(Uri.parse(uri));
       var response = await request.close();
-      // print(response.statusCode);
-      // print(HttpStatus.ok);
       if (response.statusCode == HttpStatus.ok) {
         var responseBody = await response.transform(utf8.decoder).join();
         // print(responseBody);
-        result = json.decode(responseBody);
-        // print(result);
-        print(result["data"]["rooms"]);
-        var allRooms = result["data"]["rooms"];
+        Map result = json.decode(responseBody);
+        AllRoomDevices allRoomDevices = new AllRoomDevices.fromJson(result);
+
+        List<Room> allRooms = allRoomDevices.rooms;
         // 为每个设备标记原始房间id 和 name
         for (var room in allRooms) {
-          for (var device in room['devices']) {
-            device['room_id'] = room['room_id'];
-            device['room_name'] = room['room_name'];
+          for (var device in room.devices) {
+            device.roomId = room.roomId;
+            device.roomName = room.roomName;
           }
         }
 
         for (var item in allRooms) {
-          if (item['room_id'] == roomId) {
+          if (item.roomId == roomId) {
             print("hello");
             curRoom.add(item);
-          } else if (item['room_id'] == null) {
+          } else if (item.roomId == null) {
             defaultRooms.add(item);
             allOtherRooms.add(item);
-            deviceCount += item["devices"].length;
+            deviceCount += item.devices.length;
           } else {
             otherRooms.add(item);
             allOtherRooms.add(item);
-            deviceCount += item["devices"].length;
+            deviceCount += item.devices.length;
           }
         }
         // print(curRoom);
@@ -241,10 +239,10 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
     );
   }
 
-  Widget singleRoomDevides(room, signal) {
+  Widget singleRoomDevides(Room room, String signal) {
     print("________________________________");
-    print(room['room_id']);
-    return room['devices'] != null && room['devices'].length> 0 ? Container(
+    print(room.roomId);
+    return room.devices != null && room.devices.length> 0 ? Container(
         padding: EdgeInsets.only(left: _horizontalMargin),
         alignment: Alignment.centerLeft,
         child: Column(
@@ -253,16 +251,16 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-              child: Text(room['room_name'],
+              child: Text(room.roomName,
                   style: TextStyle(
                       fontSize: ScreenUtil().setSp(26, false),
                       color: Color(0xff7D80A2))),
             ),
             Wrap(
               spacing: _horizontalMargin,
-              children: room['devices']
+              children: room.devices
                   .map<Widget>((device) =>
-                      _singleDeviceCard(room['room_id'], device, signal))
+                      _singleDeviceCard(room.roomId, device, signal))
                   .toList(),
 
             ),
@@ -272,7 +270,7 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
         );
   }
 
-  Widget _singleDeviceCard(curRoomId, device, signal) {
+  Widget _singleDeviceCard(int curRoomId,Device device, String signal) {
     return Container(
       width: ScreenUtil().setWidth(345),
       height: ScreenUtil().setHeight(256),
@@ -295,7 +293,7 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
                   bottom: ScreenUtil().setHeight(100)
                 ),
               child: Image(
-                image: NetworkImage(device["app_pic_url"]
+                image: NetworkImage(device.appPicUrl
                     // "https://img10.360buyimg.com/n5/s54x54_jfs/t1/1325/27/9916/31986/5bc946c9E748626df/79850cb5c7d8a7f0.jpg"
                     ),
                 width: 150.0,
@@ -319,10 +317,10 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
                     children: <Widget>[
                       Container(
                         margin: EdgeInsets.only(top: ScreenUtil().setHeight(8)),
-                        child: Text(device["device_name"],
+                        child: Text(device.deviceName,
                             style: TextStyle(color: Color(0xffffffff))),
                       ),
-                      Text(device["category_name"],
+                      Text(device.categoryName,
                           style: TextStyle(
                               color: Color(0xffFFF091),
                               fontSize: ScreenUtil().setSp(24)))
@@ -362,13 +360,13 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
 
   void _removeDevice(device) {
     print(device);
-    curRoom[0]['devices'].remove(device);
-    if (device['room_id'] == roomId || device['room_id'] == null) {
-      defaultRooms[0]['devices'].insert(0, device);
+    curRoom[0].devices.remove(device);
+    if (device.roomId == roomId || device.roomId == null) {
+      defaultRooms[0].devices.insert(0, device);
     } else {
       for (var item in otherRooms) {
-        if (item['room_id'] == device['room_id']) {
-          item['devices'].insert(0, device);
+        if (item.roomId == device.roomId) {
+          item.devices.insert(0, device);
         }
       }
     }
@@ -383,13 +381,13 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
 
   void _addToCurRoom(device, signal) {
     print(device);
-    curRoom[0]['devices'].add(device);
+    curRoom[0].devices.add(device);
     if (signal == 'default') {
-      defaultRooms[0]['devices'].remove(device);
+      defaultRooms[0].devices.remove(device);
     } else {
       for (var item in otherRooms) {
-        if (item['room_id'] == device['room_id']) {
-          item['devices'].remove(device);
+        if (item.roomId == device.roomId) {
+          item.devices.remove(device);
         }
       }
     }
@@ -414,8 +412,8 @@ class RoomsInfoState extends State<RoomsInfo> with TickerProviderStateMixin {
 }
 
 class SingleDeviceCard extends StatefulWidget {
-  final curRoomId;
-  final device;
+  final int curRoomId;
+  final Device device;
   final String signal;
   final onRemove;
   final onAdd;
@@ -436,8 +434,8 @@ class SingleDeviceCard extends StatefulWidget {
 
 class SingleDeviceCardState extends State<SingleDeviceCard>
     with TickerProviderStateMixin {
-  final curRoomId;
-  final device;
+  final int curRoomId;
+  final Device device;
   final String signal;
   final onRemove;
   final onAdd;
@@ -481,7 +479,7 @@ class SingleDeviceCardState extends State<SingleDeviceCard>
                   top: ScreenUtil().setHeight(6),
                   bottom: ScreenUtil().setHeight(130)),
               child: Image(
-                image: NetworkImage(device["app_pic_url"]
+                image: NetworkImage(device.appPicUrl
                     // "https://img10.360buyimg.com/n5/s54x54_jfs/t1/1325/27/9916/31986/5bc946c9E748626df/79850cb5c7d8a7f0.jpg"
                     ),
                 width: 150.0,
@@ -503,10 +501,10 @@ class SingleDeviceCardState extends State<SingleDeviceCard>
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                        child: Text(device["device_name"],
+                        child: Text(device.deviceName,
                             style: TextStyle(color: Color(0xffffffff))),
                       ),
-                      Text(device["category_name"],
+                      Text(device.categoryName,
                           style: TextStyle(
                               color: Color(0xffFFF091),
                               fontSize: ScreenUtil().setSp(24)))
