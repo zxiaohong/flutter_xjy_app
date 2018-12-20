@@ -8,9 +8,11 @@ import './scenes.dart';
 import '../houseManagement/house.dart';
 
 import 'package:http/http.dart' as http;
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../../model/housesAndRoomsModel.dart';
+
+
 
 class SmartHome extends StatefulWidget {
   @override
@@ -43,12 +45,16 @@ class SmartHomeState extends State<SmartHome>
     String url = "https://easy-mock.com/mock/5c1362e3bb577d1fbc488206/s/service/getHousesAndRooms";
     final response = await http.get(url);
     if(response.statusCode == HttpStatus.ok){
-      var result = json.decode(response.body);
-      var house = result["data"][0];
+
+      Map result = json.decode(response.body);
+      HousesAndRooms houses = new HousesAndRooms.fromJson(result["data"]);
+      House curHouse = houses.houses[0];
+
+      if(!mounted) return;
       setState(() {
-        houseId = house["house_id"];
-        houseName =  house["house_name"];
-        roomCnt  = house["rooms"].length;
+        houseId = curHouse.houseId;
+        houseName =  curHouse.houseName;
+        roomCnt  = curHouse.rooms.length;
         _loading = false;
       });
     }

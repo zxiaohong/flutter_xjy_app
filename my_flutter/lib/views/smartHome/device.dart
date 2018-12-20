@@ -1,12 +1,11 @@
 import 'package:http/http.dart' as http;
-import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter/material.dart';
-import '../../model/allRoomDevices.dart';
+import '../../model/allRoomDevicesModel.dart';
 
 class DeviceCard extends StatefulWidget {
   @override
@@ -49,7 +48,7 @@ class DeviceCardViewState extends State<DeviceCardView> {
         crossAxisCount: 2,
         crossAxisSpacing: ScreenUtil().setWidth(30),
         childAspectRatio: 1,
-        mainAxisSpacing: ScreenUtil().setHeight(20)
+        mainAxisSpacing: ScreenUtil().setHeight(10)
       ),
       itemCount: _devices.length,
       itemBuilder: _singleDeviceCardBuilder,

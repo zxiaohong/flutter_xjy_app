@@ -112,7 +112,7 @@ class HouseNameState extends State<HouseName> {
     Dio dio = new Dio();
     Response response;
     response= await dio.post("https://easy-mock.com/mock/5c1362e3bb577d1fbc488206/s/service/saveHouseName",data:{"id":id,"name":name});
-    print(response.data.toString());
+    print(response.data['data']);
     Navigator.of(context).pop();
   }
 }

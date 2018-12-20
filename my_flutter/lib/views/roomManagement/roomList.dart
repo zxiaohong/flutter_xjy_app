@@ -5,6 +5,8 @@ import 'dart:io';
 
 import './editRoom.dart';
 
+import '../../model/RoomsModel.dart';
+
 class RoomList extends StatefulWidget {
   final houseId;
   RoomList(this.houseId);
@@ -18,8 +20,8 @@ class RoomListState extends State<RoomList> {
   bool _editing = false;
   bool _isLoading = true;
 
-  var _rooms = [];
-  var _defaultRoom = {};
+  List<Room> _rooms;
+  Room _defaultRoom;
 
   final TextStyle _fontStyle = TextStyle(
       fontSize: ScreenUtil().setSp(28, false), color: Color(0xffDEDFE8));
@@ -35,25 +37,26 @@ class RoomListState extends State<RoomList> {
     var httpClient = new HttpClient();
     String uri =
         "https://easy-mock.com/mock/5c1362e3bb577d1fbc488206/s/service/getRoomsByHouse";
-    var result;
+
 
     try {
       var request = await httpClient.getUrl(Uri.parse(uri));
       var response = await request.close();
-      var responseBody = await response.transform(utf8.decoder).join();
-      result = json.decode(responseBody);
+      String  responseBody = await response.transform(utf8.decoder).join();
+      Map result = json.decode(responseBody);
       print(result["data"]["rooms"]);
-      var rooms = result["data"]["rooms"];
-      var defaultRoom = {};
-      for (var item in rooms) {
-        if (item["room_id"] == null) {
+      Rooms rooms = new Rooms.fromJson(result['data']);
+      List<Room> roomList = rooms.rooms;
+      Room defaultRoom;
+      for (var item in roomList) {
+        if (item.roomId == null) {
           defaultRoom = item;
         }
       }
-      print(defaultRoom["device_cnt"]);
+      print(defaultRoom.deviceCnt);
       if (!mounted) return;
       setState(() {
-        _rooms = result["data"]["rooms"];
+        _rooms = roomList;
         _defaultRoom = defaultRoom;
         _isLoading = false;
       });
@@ -139,10 +142,10 @@ class RoomListState extends State<RoomList> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  _defaultRoom['device_cnt'] == 0
+                  _defaultRoom.deviceCnt == 0
                           ? Text("暂无设备",
                               style: TextStyle(color: Color(0xffADB0C6)))
-                          : Text("有${_defaultRoom['device_cnt']}个设备",
+                          : Text("有${_defaultRoom.deviceCnt}个设备",
                               style: _fontStyle),
                   Icon(
                     Icons.keyboard_arrow_right,
@@ -166,17 +169,17 @@ class RoomListState extends State<RoomList> {
   }
 
   // 房间列表项
-  Widget _roomItem(bool _editing, Map room) {
+  Widget _roomItem(bool _editing, Room room) {
     final _fontStyle = TextStyle(
         fontSize: ScreenUtil().setSp(28, false), color: Color(0xffDEDFE8));
-    print(room["room_id"]);
+    print(room.roomId);
 
     return Container(
       padding: EdgeInsets.only(left: 5.0),
       decoration: BoxDecoration(
           border:
               Border(bottom: BorderSide(width: 1.0, color: Color(0Xff3B426B)))),
-      child: room["room_id"] == null
+      child: room.deviceCnt == null
           ? null
           : ListTile(
               // 判断是否是默认房间
@@ -193,16 +196,16 @@ class RoomListState extends State<RoomList> {
                       onPressed: null,
                     )
                   : null,
-              title: Text(room["room_name"], style: _fontStyle),
+              title: Text(room.roomName, style: _fontStyle),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   _editing
                       ? Text("")
-                      : room['device_cnt'] == 0
+                      : room.deviceCnt == 0
                           ? Text("暂无设备",
                               style: TextStyle(color: Color(0xffADB0C6)))
-                          : Text("有${room['device_cnt']}个设备",
+                          : Text("有${room.deviceCnt}个设备",
                               style: _fontStyle),
                   Icon(
                     Icons.keyboard_arrow_right,
@@ -212,7 +215,7 @@ class RoomListState extends State<RoomList> {
               ),
               onTap: _editing
                   ? null
-                  : () => _goEditRoom(room['room_name'], room['room_id']),
+                  : () => _goEditRoom(room.roomName, room.roomId),
             ),
     );
   }
