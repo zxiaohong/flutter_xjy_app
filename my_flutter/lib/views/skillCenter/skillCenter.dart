@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../roomManagement/editRoomDevices.dart';
 
 
 class SkillCenter extends StatefulWidget{
@@ -14,17 +15,7 @@ class SkillCenterState extends State<SkillCenter>{
   Widget build(BuildContext context){
     return new Scaffold(
       backgroundColor: Color(0Xff3B426B),
-      appBar: AppBar(title: new Text("技能中心")),
-      body:  Center(
-          child: new Text(
-            "技能中心",
-            style: new TextStyle(
-                fontSize: ScreenUtil().setSp(24),
-                fontWeight: FontWeight.w500,
-                fontFamily: "Georgia",
-                color: Colors.white),
-          ),
-        ),
+      body: EditRoomDevice('次卧', 2),
     );
   }
 }

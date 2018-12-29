@@ -7,7 +7,9 @@ import 'myApp.dart';
 
 
 void main(){
-  runApp(_widgetForRoute(window.defaultRouteName));
+
+  Map<String, String> window = {'defaultRouteName': 'route1'};
+  runApp(_widgetForRoute(window['defaultRouteName']));
   // 修改系统顶部导航栏颜色
   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Color.fromRGBO(35, 38, 66, 1.0));
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);

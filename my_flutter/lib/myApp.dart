@@ -47,22 +47,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     ///Set the fit size (fill in the screen size of the device in the design) If the design is based on the size of the iPhone6 ​​(iPhone6 ​​750*1334)
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
-    print('Device width:${ScreenUtil.screenWidth}'); //Device width
-    print('Device height:${ScreenUtil.screenHeight}'); //Device height
-    print(
-        'Device pixel density:${ScreenUtil.pixelRatio}'); //Device pixel density
-    print(
-        'Bottom safe zone distance:${ScreenUtil.bottomBarHeight}'); //Bottom safe zone distance，suitable for buttons with full screen
-    print(
-        'Status bar height:${ScreenUtil.statusBarHeight}px'); //Status bar height , Notch will be higher Unit px
-    print(
-        'Ratio of actual width dp to design draft px:${ScreenUtil().scaleWidth}');
-    print(
-        'Ratio of actual height dp to design draft px:${ScreenUtil().scaleHeight}');
-    print(
-        'The ratio of font and width to the size of the design:${ScreenUtil().scaleWidth * ScreenUtil.pixelRatio}');
-    print(
-        'The ratio of  height width to the size of the design:${ScreenUtil().scaleHeight * ScreenUtil.pixelRatio}');
+    // print('Device width:${ScreenUtil.screenWidth}'); //Device width
+    // print('Device height:${ScreenUtil.screenHeight}'); //Device height
+    // print(
+    //     'Device pixel density:${ScreenUtil.pixelRatio}'); //Device pixel density
+    // print(
+    //     'Bottom safe zone distance:${ScreenUtil.bottomBarHeight}'); //Bottom safe zone distance，suitable for buttons with full screen
+    // print(
+    //     'Status bar height:${ScreenUtil.statusBarHeight}px'); //Status bar height , Notch will be higher Unit px
+    // print(
+    //     'Ratio of actual width dp to design draft px:${ScreenUtil().scaleWidth}');
+    // print(
+    //     'Ratio of actual height dp to design draft px:${ScreenUtil().scaleHeight}');
+    // print(
+    //     'The ratio of font and width to the size of the design:${ScreenUtil().scaleWidth * ScreenUtil.pixelRatio}');
+    // print(
+    //     'The ratio of  height width to the size of the design:${ScreenUtil().scaleHeight * ScreenUtil.pixelRatio}');
 
     return Scaffold(
         body: Container(child: _widgetOptions.elementAt(_selectedIndex)),

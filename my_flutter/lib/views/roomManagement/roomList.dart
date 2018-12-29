@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import './editRoom.dart';
+import './editRoomDevices.dart';
 
 import '../../model/RoomsModel.dart';
 
@@ -53,7 +54,7 @@ class RoomListState extends State<RoomList> {
           defaultRoom = item;
         }
       }
-      print(defaultRoom.deviceCnt);
+      print("default:${defaultRoom.deviceCnt}");
       if (!mounted) return;
       setState(() {
         _rooms = roomList;
@@ -179,7 +180,7 @@ class RoomListState extends State<RoomList> {
       decoration: BoxDecoration(
           border:
               Border(bottom: BorderSide(width: 1.0, color: Color(0Xff3B426B)))),
-      child: room.deviceCnt == null
+      child: room.roomId == null
           ? null
           : ListTile(
               // 判断是否是默认房间
@@ -223,9 +224,9 @@ class RoomListState extends State<RoomList> {
 // 进入编辑房间页面
   void _goEditRoom(String roomName, int roomId) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return new
+      return
           // FilterAnimationGoogleIOTutorial();
-          EditRoom(roomName, roomId);
+          EditRoomDevice(roomName, roomId);
     }));
   }
 
